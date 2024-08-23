@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -14,6 +15,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun QRCodeContent(content: String, size: Int) {
     val viewModel = hiltViewModel<QRCodeViewModel>()
     val bitmap = viewModel.generateQRCode(content, size)
+    LaunchedEffect(Unit) {
+        viewModel.getQuote()
+    }
     
     if (bitmap != null) {
         Image(bitmap = bitmap.asImageBitmap(), contentDescription = "QR Code")
