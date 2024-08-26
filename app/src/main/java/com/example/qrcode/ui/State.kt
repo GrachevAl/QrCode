@@ -6,6 +6,7 @@ import com.example.qrcode.ui.model.QuoteX
 import java.io.IOException
 
 data class State(
-    val quote: List<Quote> = emptyList(),
+    val query : String = "",
+    val quote: List<QuoteX> = emptyList(),
     val errorMessage: String = ""
 )

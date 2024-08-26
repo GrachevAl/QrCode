@@ -15,5 +15,6 @@ interface Api {
     @Headers("accept: application/hal+json")
     suspend fun searchQuote(
         @Query("query") query : String
-    ) : List<Quote>
+    ) : Quote
 }
+

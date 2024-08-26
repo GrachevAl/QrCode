@@ -10,10 +10,10 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(private val api: Api): Repository {
-    override suspend fun getQuote(query: String): Flow<List<Quote>> = flow{
+    override suspend fun getQuote(query: String): Flow<List<QuoteX>> = flow{
         try {
             val result = api.searchQuote(query)
-            emit(result)
+            emit(result.embedded.quotes)
         } catch (e: HttpException){
             Log.e("RepositoryError", "HTTP error: ${e.response()?.errorBody()?.string()}")
         }

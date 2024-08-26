@@ -29,17 +29,24 @@ class QRCodeViewModel @Inject constructor(
         return qrCodeGenerator.generateQRCode(content, size)
     }
 
+    fun setQuery(query: String){
+        _state.update {
+            it.copy(
+                query = query
+            )
+        }
+    }
+
     suspend fun getQuote(){
+        val query = state.value.query
         viewModelScope.launch {
-            repository.getQuote("Barack").collect{ quote->
+            repository.getQuote(query).collect{ quote->
                 _state.update {
                     it.copy(
                         quote = quote
                     )
                 }
-                Log.e("Quote", "${_state.value.quote}")
-                Log.e("Quote", "${_state.value.errorMessage}")
-                Log.e("Quote", "${state.value.quote}")
+
             }
         }
     }
@@ -65,9 +72,5 @@ class QRCodeViewModel @Inject constructor(
             }
         }
 
-
-        Log.e("Quote", "${_state.value.quote}")
-        Log.e("Quote", "${_state.value.errorMessage}")
-        Log.e("Quote", "${state.value.quote}")
     }*/
 }
