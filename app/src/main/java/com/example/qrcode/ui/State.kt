@@ -8,5 +8,6 @@ import java.io.IOException
 data class State(
     val query : String = "",
     val quote: List<QuoteX> = emptyList(),
-    val errorMessage: String = ""
+    val errorMessage: String = "",
+    val loading: Boolean = false
 )

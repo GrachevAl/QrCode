@@ -29,48 +29,47 @@ class QRCodeViewModel @Inject constructor(
         return qrCodeGenerator.generateQRCode(content, size)
     }
 
-    fun setQuery(query: String){
-        _state.update {
-            it.copy(
-                query = query
-            )
-        }
+    fun setQuery(query: String) {
+        _state.update { it.copy(query = query) }
+
     }
 
-    suspend fun getQuote(){
-        val query = state.value.query
-        viewModelScope.launch {
-            repository.getQuote(query).collect{ quote->
-                _state.update {
-                    it.copy(
-                        quote = quote
-                    )
-                }
 
+    /* suspend fun getQuote(){
+         val query = state.value.query
+         viewModelScope.launch {
+             repository.getQuote(query).collect{ quote->
+                 _state.update {
+                     it.copy(
+                         quote = quote
+                     )
+                 }
+
+             }
+         }
+     }*/
+
+    suspend fun getQuote() {
+        val query = state.value.query.trim()
+
+        repository.getQuote(query).collect { quote ->
+            when (quote) {
+                is ResultClass.Success -> {
+                    _state.update {
+                        it.copy(quote = quote.data, loading = false, errorMessage = "")
+                    }
+                }
+                is ResultClass.Error -> {
+                    val errorMessage = if (quote.exception.message == "Query cannot be empty.") {
+                        "Please enter a query."
+                    } else {
+                        "Nothing was found"
+                    }
+                    _state.update {
+                        it.copy(errorMessage = errorMessage, loading = false, quote = emptyList())
+                    }
+                }
             }
         }
     }
-
-    /*suspend fun getQuote() {
-        repository.getQuote("Barack Obama").collect { quote ->
-            Log.e("Quote", "${quote}")
-            when(quote){
-                is ResultClass.Success ->{
-                    _state.update {
-                        it.copy(
-                          quote = quote.data.embedded.quotes
-                        )
-                    }
-                }
-                is ResultClass.Error ->{
-                    _state.update {
-                        it.copy(
-                            errorMessage = "null"
-                        )
-                    }
-                }
-            }
-        }
-
-    }*/
 }

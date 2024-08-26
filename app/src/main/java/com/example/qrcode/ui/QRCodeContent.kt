@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -47,28 +48,9 @@ fun QRCodeContent(content: String, size: Int) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PreviewQRCodeContent(
-    viewModel: QRCodeViewModel = hiltViewModel<QRCodeViewModel>()) {
-    val state by viewModel.state.collectAsState()
-
-    LaunchedEffect(state.query) {
-        viewModel.getQuote()
-    }
-
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            TextFieldQuery(
-                query = state.query, onValueChange = viewModel::setQuery
-            )
-            LazyColumn {
-                items(state.quote, key = {
-                    it.quoteId
-                }) { quote ->
-                    ItemQuote(quoteX = quote)
-                }
-            }
-        }
-
-    }
+    viewModel: QRCodeViewModel = hiltViewModel<QRCodeViewModel>()
+) {
+    Render(viewModel = viewModel)
 }
 
 @Composable
@@ -108,4 +90,36 @@ fun TextFieldQuery(
     query: String, onValueChange: (String) -> Unit
 ) {
     TextField(value = query, onValueChange = { onValueChange(it) })
+}
+
+
+@Composable
+fun Render(viewModel: QRCodeViewModel) {
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(state.query) {
+        viewModel.getQuote()
+    }
+
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            TextFieldQuery(query = state.query, onValueChange = viewModel::setQuery)
+
+            if (state.loading) {
+                CircularProgressIndicator()
+            } else if (state.errorMessage.isNotEmpty()) {
+                Text(
+                    "Error: ${state.errorMessage}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else if (state.quote.isNotEmpty()) {
+                LazyColumn {
+                    items(state.quote, key = { it.quoteId }) { quote ->
+                        ItemQuote(quoteX = quote)
+                    }
+                }
+            }
+        }
+    }
 }

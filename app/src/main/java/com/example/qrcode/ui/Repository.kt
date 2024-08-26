@@ -8,5 +8,5 @@ import retrofit2.http.Query
 
 interface Repository {
 
-    suspend fun getQuote(query: String): Flow<List<QuoteX>>
+    suspend fun getQuote(query: String): Flow<ResultClass<List<QuoteX>>>
 }
